@@ -1,0 +1,186 @@
+{
+  "name": "docker_image_pull_failure",
+  "description": "A Docker Image Pull Failure is an incident where the Docker engine fails to download a specific image from a container registry. This issue can occur due to various reasons such as network connectivity issues, authentication problems, or server-side errors. As a result of this failure, the container that requires the specific image fails to start or run, causing a disruption in the application or service that relies on that container.",
+  "params": [
+    {
+      "name": "DOCKER_REGISTRY_HOSTNAME_OR_IP_ADDRESS",
+      "value": ""
+    },
+    {
+      "name": "DOCKER_REGISTRY_PORT_NUMBER",
+      "value": ""
+    },
+    {
+      "name": "DOCKER_REGISTRY_URL",
+      "value": ""
+    },
+    {
+      "name": "DOCKER_REGISTRY_PASSWORD",
+      "value": ""
+    },
+    {
+      "name": "IMAGE_NAME",
+      "value": ""
+    },
+    {
+      "name": "DOCKER_REGISTRY_USERNAME",
+      "value": ""
+    },
+    {
+      "name": "REGISTRY_URL",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Docker Image Pull Failure.\nA Docker Image Pull Failure is an incident where the Docker engine fails to download a specific image from a container registry. This issue can occur due to various reasons such as network connectivity issues, authentication problems, or server-side errors. As a result of this failure, the container that requires the specific image fails to start or run, causing a disruption in the application or service that relies on that container."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Docker network connectivity"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `docker run --rm alpine ping ${REGISTRY_URL}`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Docker daemon status"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `systemctl status docker`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Docker version"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `docker version`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## View Docker image details"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `docker image inspect ${IMAGE_NAME}`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## View Docker logs"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `journalctl -u docker.service`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Docker image tags"
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `curl -s https://${REGISTRY_URL}/v2/${IMAGE_NAME}/tags/list`"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Test Docker image pull"
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `docker pull ${IMAGE_NAME}`"
+    },
+    {
+      "name": "cell_16",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Authenticate Docker registry login"
+    },
+    {
+      "name": "cell_17",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `docker login ${REGISTRY_URL}`"
+    },
+    {
+      "name": "cell_18",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Docker credentials"
+    },
+    {
+      "name": "cell_19",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `cat ~/.docker/config.json`"
+    },
+    {
+      "name": "cell_20",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the network connectivity between the Docker engine and the container registry to ensure that there are no network issues."
+    },
+    {
+      "name": "cell_21",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_check_docker_registry_connectivity($DOCKER_REGISTRY_HOSTNAME_OR_IP_ADDRESS, $DOCKER_REGISTRY_PORT_NUMBER)"
+    },
+    {
+      "name": "cell_22",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Verify that the container registry credentials are correct and that the Docker engine has the necessary privileges to access the images stored in the registry."
+    },
+    {
+      "name": "cell_23",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_docker_pull($DOCKER_REGISTRY_URL, $DOCKER_REGISTRY_PASSWORD, $IMAGE_NAME, $DOCKER_REGISTRY_USERNAME)"
+    }
+  ]
+}
